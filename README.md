@@ -10,12 +10,12 @@ Send and receive WhatsApp, Telegram and MAX messages in Node-RED flows through [
 
 ## Installation
 
-In the Node-RED editor: **Menu > Manage palette > Install**, search for `@green-api/node-red-greenapi`.
+In the Node-RED editor: **Menu > Manage palette > Install**, search for `@green-api/node-red-whatsapp-by-green-api`.
 
 Or in your Node-RED user directory (usually `~/.node-red`):
 
 ```bash
-npm install @green-api/node-red-greenapi
+npm install @green-api/node-red-whatsapp-by-green-api
 ```
 
 Requires Node-RED 4 or newer and Node.js 22.9 or newer.
@@ -50,7 +50,7 @@ Which notification types GREEN-API sends at all is set in the instance settings.
 
 ## Examples
 
-**Menu > Import > Examples > @green-api/node-red-greenapi**:
+**Menu > Import > Examples > @green-api/node-red-whatsapp-by-green-api**:
 
 - `send-text`: send a text from an inject node.
 - `echo-bot`: reply to incoming text messages with the same text.
