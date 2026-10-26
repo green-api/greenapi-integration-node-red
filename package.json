@@ -42,7 +42,7 @@
     }
   },
   "dependencies": {
-    "@green-api/greenapi-integration": "file:../greenapi-integration"
+    "@green-api/greenapi-integration": "^0.10.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",
