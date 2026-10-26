@@ -1,0 +1,150 @@
+<script type="text/javascript">
+    (function () {
+        var ROWS = {
+            body: ["post"],
+            query: ["get"],
+            file: ["upload"],
+            fileName: ["upload"],
+            fields: ["upload"]
+        };
+
+        RED.nodes.registerType("greenapi-api", {
+            category: "GREEN API",
+            color: "#87D3A3",
+            defaults: {
+                name: {value: ""},
+                instance: {value: "", type: "greenapi-instance", required: true},
+                httpMethod: {value: "get"},
+                method: {value: "getStateInstance"}, methodType: {value: "str"},
+                body: {value: "payload"}, bodyType: {value: "msg"},
+                query: {value: ""}, queryType: {value: "json"},
+                file: {value: "payload"}, fileType: {value: "msg"},
+                fileName: {value: "filename"}, fileNameType: {value: "msg"},
+                fields: {value: ""}, fieldsType: {value: "json"}
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-code",
+            label: function () {
+                return this.name || (this.methodType === "str" && this.method) || "GREEN-API method";
+            },
+            paletteLabel: "api",
+            oneditprepare: function () {
+                $("#node-input-method").typedInput({
+                    default: "str",
+                    typeField: "#node-input-methodType",
+                    types: ["str", "msg", "flow", "global", "env"]
+                });
+                $("#node-input-body").typedInput({
+                    default: "msg",
+                    typeField: "#node-input-bodyType",
+                    types: ["msg", "json", "flow", "global"]
+                });
+                $("#node-input-query").typedInput({
+                    default: "json",
+                    typeField: "#node-input-queryType",
+                    types: ["json", "msg", "flow", "global"]
+                });
+                $("#node-input-file").typedInput({
+                    default: "msg",
+                    typeField: "#node-input-fileType",
+                    types: ["msg", "flow", "global", "bin"]
+                });
+                $("#node-input-fileName").typedInput({
+                    default: "msg",
+                    typeField: "#node-input-fileNameType",
+                    types: ["msg", "flow", "global", "str", "env"]
+                });
+                $("#node-input-fields").typedInput({
+                    default: "json",
+                    typeField: "#node-input-fieldsType",
+                    types: ["json", "msg", "flow", "global"]
+                });
+                var toggle = function () {
+                    var httpMethod = $("#node-input-httpMethod").val();
+                    Object.keys(ROWS).forEach(function (row) {
+                        $("#greenapi-api-row-" + row).toggle(ROWS[row].indexOf(httpMethod) !== -1);
+                    });
+                };
+                $("#node-input-httpMethod").on("change", toggle);
+                toggle();
+            }
+        });
+    })();
+</script>
+
+<script type="text/html" data-template-name="greenapi-api">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-instance"><i class="fa fa-server"></i> Instance</label>
+        <input type="text" id="node-input-instance">
+    </div>
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-code"></i> Method</label>
+        <input type="text" id="node-input-method">
+        <input type="hidden" id="node-input-methodType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-httpMethod"><i class="fa fa-exchange"></i> Request</label>
+        <select id="node-input-httpMethod">
+            <option value="get">GET</option>
+            <option value="post">POST, JSON body</option>
+            <option value="upload">POST, file upload</option>
+            <option value="delete">DELETE</option>
+        </select>
+    </div>
+    <div class="form-row" id="greenapi-api-row-body">
+        <label for="node-input-body"><i class="fa fa-file-code-o"></i> Body</label>
+        <input type="text" id="node-input-body">
+        <input type="hidden" id="node-input-bodyType">
+    </div>
+    <div class="form-row" id="greenapi-api-row-query">
+        <label for="node-input-query"><i class="fa fa-question"></i> Query</label>
+        <input type="text" id="node-input-query" placeholder="{&quot;minutes&quot;: 60}">
+        <input type="hidden" id="node-input-queryType">
+    </div>
+    <div class="form-row" id="greenapi-api-row-file">
+        <label for="node-input-file"><i class="fa fa-file"></i> File</label>
+        <input type="text" id="node-input-file">
+        <input type="hidden" id="node-input-fileType">
+    </div>
+    <div class="form-row" id="greenapi-api-row-fileName">
+        <label for="node-input-fileName"><i class="fa fa-file-text-o"></i> File name</label>
+        <input type="text" id="node-input-fileName">
+        <input type="hidden" id="node-input-fileNameType">
+    </div>
+    <div class="form-row" id="greenapi-api-row-fields">
+        <label for="node-input-fields"><i class="fa fa-list"></i> Fields</label>
+        <input type="text" id="node-input-fields" placeholder="{&quot;groupId&quot;: &quot;...@g.us&quot;}">
+        <input type="hidden" id="node-input-fieldsType">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="greenapi-api">
+    <p>Calls any GREEN-API method by name, for everything the <i>send</i> node does not cover: groups, journals, statuses, contacts, instance settings, profile and group pictures.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>method <span class="property-type">string</span></dt>
+        <dd>GREEN-API method name as in the documentation, e.g. <code>getChatHistory</code>.</dd>
+        <dt>body <span class="property-type">object</span></dt>
+        <dd><b>POST, JSON body</b>: request body. Default <code>msg.payload</code>.</dd>
+        <dt>query <span class="property-type">object</span></dt>
+        <dd><b>GET</b>: optional query parameters, e.g. <code>{"minutes": 60}</code> for <code>lastIncomingMessages</code> or <code>{"idMessage": "..."}</code> for <code>getStatusStatistic</code>.</dd>
+        <dt>file <span class="property-type">Buffer</span></dt>
+        <dd><b>POST, file upload</b>: file content. Default <code>msg.payload</code>, as set by the <i>read file</i> node.</dd>
+        <dt>fileName <span class="property-type">string</span></dt>
+        <dd><b>POST, file upload</b>: file name with extension. A path is reduced to its base name. Default <code>msg.filename</code>.</dd>
+        <dt>fields <span class="property-type">object</span></dt>
+        <dd><b>POST, file upload</b>: other form fields, e.g. <code>{"groupId": "...@g.us"}</code> for <code>setGroupPicture</code>.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">any</span></dt>
+        <dd>GREEN-API response.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Pick the request type the method documentation shows: GET, POST with a JSON body, POST with a file (form-data), as for <code>setProfilePicture</code> and <code>setGroupPicture</code>, or DELETE, as for <code>clearWebhooksQueue</code>. To send a file to a chat, use the <i>send</i> node. Errors are reported to the <i>catch</i> node.</p>
+</script>

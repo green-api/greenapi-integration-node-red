@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    RED.nodes.registerType("greenapi-instance", {
+        category: "config",
+        defaults: {
+            name: {value: ""},
+            apiUrl: {value: ""},
+            mediaUrl: {value: ""}
+        },
+        credentials: {
+            idInstance: {type: "text", required: true},
+            apiTokenInstance: {type: "password", required: true}
+        },
+        label: function () {
+            return this.name || "GREEN-API instance";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="greenapi-instance">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-idInstance"><i class="fa fa-id-card"></i> idInstance</label>
+        <input type="text" id="node-config-input-idInstance" placeholder="1101000001">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apiTokenInstance"><i class="fa fa-key"></i> apiTokenInstance</label>
+        <input type="password" id="node-config-input-apiTokenInstance">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apiUrl"><i class="fa fa-globe"></i> apiUrl</label>
+        <input type="text" id="node-config-input-apiUrl" placeholder="https://api.green-api.com">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mediaUrl"><i class="fa fa-upload"></i> mediaUrl</label>
+        <input type="text" id="node-config-input-mediaUrl" placeholder="https://media.greenapi.com">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="greenapi-instance">
+    <p>A GREEN-API instance: WhatsApp, Telegram or MAX. The messenger is detected from the instance settings.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>idInstance <span class="property-type">string</span></dt>
+        <dd>Instance ID from the GREEN-API console.</dd>
+        <dt>apiTokenInstance <span class="property-type">string</span></dt>
+        <dd>Instance API token from the GREEN-API console. Stored in Node-RED credentials, not exported with flows.</dd>
+        <dt>apiUrl <span class="property-type">string</span></dt>
+        <dd>The instance apiUrl from the GREEN-API console. Leave empty for https://api.green-api.com.</dd>
+        <dt>mediaUrl <span class="property-type">string</span></dt>
+        <dd>The instance mediaUrl from the GREEN-API console. Used for file uploads. Leave empty to upload through apiUrl.</dd>
+    </dl>
+</script>

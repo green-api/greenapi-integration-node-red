@@ -1,0 +1,6 @@
+[
+  {"id": "ex3-inject", "type": "inject", "name": "state", "props": [], "x": 120, "y": 80, "wires": [["ex3-api"]]},
+  {"id": "ex3-api", "type": "greenapi-api", "name": "", "instance": "ex3-instance", "httpMethod": "get", "method": "getStateInstance", "methodType": "str", "body": "payload", "bodyType": "msg", "x": 310, "y": 80, "wires": [["ex3-debug"]]},
+  {"id": "ex3-debug", "type": "debug", "name": "state", "active": true, "complete": "payload", "x": 500, "y": 80, "wires": []},
+  {"id": "ex3-instance", "type": "greenapi-instance", "name": "My instance", "apiUrl": ""}
+]

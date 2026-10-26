@@ -1,0 +1,6 @@
+[
+  {"id": "ex2-receive", "type": "greenapi-receive", "name": "", "mode": "polling", "instance": "ex2-instance", "path": "", "types": ["incomingMessageReceived"], "x": 120, "y": 80, "wires": [["ex2-reply"]]},
+  {"id": "ex2-reply", "type": "function", "name": "echo text", "func": "const text = msg.payload.messageData?.textMessageData?.textMessage\n    ?? msg.payload.messageData?.extendedTextMessageData?.text;\nif (!text) {\n    return null;\n}\nmsg.chatId = msg.payload.senderData.chatId;\nmsg.payload = text;\nreturn msg;", "outputs": 1, "x": 300, "y": 80, "wires": [["ex2-send"]]},
+  {"id": "ex2-send", "type": "greenapi-send", "name": "", "instance": "ex2-instance", "sendType": "text", "chatId": "chatId", "chatIdType": "msg", "message": "payload", "messageType": "msg", "x": 480, "y": 80, "wires": [[]]},
+  {"id": "ex2-instance", "type": "greenapi-instance", "name": "My instance", "apiUrl": ""}
+]

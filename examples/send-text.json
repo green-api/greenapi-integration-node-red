@@ -1,0 +1,8 @@
+[
+  {"id": "ex1-inject", "type": "inject", "name": "send", "props": [{"p": "payload"}, {"p": "chatId", "v": "77001234567", "vt": "str"}], "payload": "Hello from Node-RED", "payloadType": "str", "x": 130, "y": 80, "wires": [["ex1-send"]]},
+  {"id": "ex1-send", "type": "greenapi-send", "name": "", "instance": "ex1-instance", "sendType": "text", "chatId": "chatId", "chatIdType": "msg", "message": "payload", "messageType": "msg", "x": 330, "y": 80, "wires": [["ex1-debug"]]},
+  {"id": "ex1-debug", "type": "debug", "name": "response", "active": true, "complete": "payload", "x": 520, "y": 80, "wires": []},
+  {"id": "ex1-catch", "type": "catch", "name": "", "scope": ["ex1-send"], "x": 130, "y": 140, "wires": [["ex1-error"]]},
+  {"id": "ex1-error", "type": "debug", "name": "error", "active": true, "complete": "error", "x": 330, "y": 140, "wires": []},
+  {"id": "ex1-instance", "type": "greenapi-instance", "name": "My instance", "apiUrl": ""}
+]

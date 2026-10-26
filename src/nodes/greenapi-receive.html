@@ -1,0 +1,113 @@
+<script type="text/javascript">
+    (function () {
+        var WEBHOOK_TYPES = [
+            "incomingMessageReceived",
+            "outgoingMessageReceived",
+            "outgoingAPIMessageReceived",
+            "outgoingMessageStatus",
+            "stateInstanceChanged",
+            "incomingCall"
+        ];
+
+        RED.nodes.registerType("greenapi-receive", {
+            category: "GREEN API",
+            color: "#87D3A3",
+            defaults: {
+                name: {value: ""},
+                mode: {value: "polling"},
+                instance: {
+                    value: "", type: "greenapi-instance", required: false,
+                    validate: function (value) {
+                        return $("#node-input-mode").length ? $("#node-input-mode").val() === "webhook" || !!value : this.mode === "webhook" || !!value;
+                    }
+                },
+                path: {value: ""},
+                types: {value: ["incomingMessageReceived"]}
+            },
+            credentials: {
+                webhookUrlToken: {type: "password"}
+            },
+            inputs: 0,
+            outputs: 1,
+            icon: "font-awesome/fa-inbox",
+            label: function () {
+                return this.name || (this.mode === "webhook" ? "receive POST " + (this.path || "") : "receive");
+            },
+            paletteLabel: "receive",
+            oneditprepare: function () {
+                var node = this;
+                var list = $("#greenapi-receive-types");
+                WEBHOOK_TYPES.forEach(function (type) {
+                    var id = "greenapi-receive-type-" + type;
+                    var row = $("<div/>").appendTo(list);
+                    $("<input type='checkbox' style='width:auto; margin:0 6px 0 0;'/>")
+                        .attr("id", id)
+                        .attr("value", type)
+                        .prop("checked", (node.types || []).indexOf(type) !== -1)
+                        .appendTo(row);
+                    $("<label style='width:auto;'/>").attr("for", id).text(type).appendTo(row);
+                });
+                if (!node.path) {
+                    $("#node-input-path").val("/greenapi/" + node.id);
+                }
+                var toggle = function () {
+                    var webhook = $("#node-input-mode").val() === "webhook";
+                    $(".greenapi-receive-webhook").toggle(webhook);
+                    $(".greenapi-receive-polling").toggle(!webhook);
+                };
+                $("#node-input-mode").on("change", toggle);
+                toggle();
+            },
+            oneditsave: function () {
+                this.types = $("#greenapi-receive-types input:checked").map(function () {
+                    return $(this).val();
+                }).get();
+            }
+        });
+    })();
+</script>
+
+<script type="text/html" data-template-name="greenapi-receive">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-exchange"></i> Mode</label>
+        <select id="node-input-mode">
+            <option value="polling">Polling (no public URL needed)</option>
+            <option value="webhook">Webhook (GREEN-API calls Node-RED)</option>
+        </select>
+    </div>
+    <div class="form-row greenapi-receive-polling">
+        <label for="node-input-instance"><i class="fa fa-server"></i> Instance</label>
+        <input type="text" id="node-input-instance">
+    </div>
+    <div class="form-row greenapi-receive-webhook">
+        <label for="node-input-path"><i class="fa fa-globe"></i> Path</label>
+        <input type="text" id="node-input-path">
+    </div>
+    <div class="form-row greenapi-receive-webhook">
+        <label for="node-input-webhookUrlToken"><i class="fa fa-key"></i> Token</label>
+        <input type="password" id="node-input-webhookUrlToken" placeholder="webhookUrlToken, optional">
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-filter"></i> Types</label>
+        <div id="greenapi-receive-types" style="display:inline-block; width:70%;"></div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="greenapi-receive">
+    <p>Outputs notifications (webhooks) from a GREEN-API instance.</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>The notification body as GREEN-API sends it.</dd>
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd>The notification type, e.g. <code>incomingMessageReceived</code>.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p><b>Types</b>: only checked types are output. Nothing checked means all types. Which notifications GREEN-API sends at all is set in the instance settings.</p>
+    <p><b>Polling</b> reads the instance notification queue, so Node-RED does not need a public address. The instance <code>webhookUrl</code> must be empty: while it is set, GREEN-API does not give notifications to polling. Each notification is removed from the queue after it is output.</p>
+    <p><b>Webhook</b> adds an HTTP endpoint at <i>Path</i> under the Node-RED HTTP root (<code>httpNodeRoot</code>). Set the instance <code>webhookUrl</code> to the public URL of that endpoint. If <i>Token</i> is set, it must equal the instance <code>webhookUrlToken</code>, and requests without it are rejected.</p>
+</script>

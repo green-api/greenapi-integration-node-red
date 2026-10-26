@@ -1,0 +1,212 @@
+<script type="text/javascript">
+    (function () {
+        var VALUE_TYPES = ["msg", "flow", "global", "str", "num", "json", "env"];
+        var FIELDS = {
+            chatId: {types: VALUE_TYPES, sendTypes: ["text", "fileUrl", "fileUpload", "location", "contact", "poll"]},
+            message: {types: VALUE_TYPES, sendTypes: ["text", "poll"]},
+            urlFile: {types: VALUE_TYPES, sendTypes: ["fileUrl"]},
+            file: {types: ["msg", "flow", "global", "bin", "str"], sendTypes: ["fileUpload", "uploadFile"]},
+            fileName: {types: VALUE_TYPES, sendTypes: ["fileUrl", "fileUpload", "uploadFile"]},
+            caption: {types: VALUE_TYPES, sendTypes: ["fileUrl", "fileUpload"]},
+            latitude: {types: VALUE_TYPES, sendTypes: ["location"]},
+            longitude: {types: VALUE_TYPES, sendTypes: ["location"]},
+            nameLocation: {types: VALUE_TYPES, sendTypes: ["location"]},
+            address: {types: VALUE_TYPES, sendTypes: ["location"]},
+            phoneContact: {types: VALUE_TYPES, sendTypes: ["contact"]},
+            firstName: {types: VALUE_TYPES, sendTypes: ["contact"]},
+            lastName: {types: VALUE_TYPES, sendTypes: ["contact"]},
+            company: {types: VALUE_TYPES, sendTypes: ["contact"]},
+            options: {types: ["json", "msg", "flow", "global", "str"], sendTypes: ["poll"]},
+            quotedMessageId: {types: VALUE_TYPES, sendTypes: ["text", "fileUrl", "fileUpload", "location", "contact", "poll"]}
+        };
+
+        RED.nodes.registerType("greenapi-send", {
+            category: "GREEN API",
+            color: "#87D3A3",
+            defaults: {
+                name: {value: ""},
+                instance: {value: "", type: "greenapi-instance", required: true},
+                sendType: {value: "text"},
+                chatId: {value: "chatId"}, chatIdType: {value: "msg"},
+                message: {value: "payload"}, messageType: {value: "msg"},
+                urlFile: {value: ""}, urlFileType: {value: "str"},
+                file: {value: "payload"}, fileType: {value: "msg"},
+                fileName: {value: "filename"}, fileNameType: {value: "msg"},
+                caption: {value: ""}, captionType: {value: "str"},
+                latitude: {value: ""}, latitudeType: {value: "num"},
+                longitude: {value: ""}, longitudeType: {value: "num"},
+                nameLocation: {value: ""}, nameLocationType: {value: "str"},
+                address: {value: ""}, addressType: {value: "str"},
+                phoneContact: {value: ""}, phoneContactType: {value: "str"},
+                firstName: {value: ""}, firstNameType: {value: "str"},
+                lastName: {value: ""}, lastNameType: {value: "str"},
+                company: {value: ""}, companyType: {value: "str"},
+                options: {value: "[\"Yes\",\"No\"]"}, optionsType: {value: "json"},
+                multipleAnswers: {value: false},
+                quotedMessageId: {value: ""}, quotedMessageIdType: {value: "str"}
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-paper-plane",
+            align: "right",
+            label: function () {
+                return this.name || (this.sendType === "uploadFile" ? "upload file" : "send " + this.sendType);
+            },
+            paletteLabel: "send",
+            oneditprepare: function () {
+                Object.keys(FIELDS).forEach(function (field) {
+                    $("#node-input-" + field).typedInput({
+                        default: "str",
+                        typeField: "#node-input-" + field + "Type",
+                        types: FIELDS[field].types
+                    });
+                });
+                var toggle = function () {
+                    var sendType = $("#node-input-sendType").val();
+                    Object.keys(FIELDS).forEach(function (field) {
+                        $("#greenapi-send-row-" + field).toggle(FIELDS[field].sendTypes.indexOf(sendType) !== -1);
+                    });
+                    $("#greenapi-send-row-multipleAnswers").toggle(sendType === "poll");
+                };
+                $("#node-input-sendType").on("change", toggle);
+                toggle();
+            }
+        });
+    })();
+</script>
+
+<script type="text/html" data-template-name="greenapi-send">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-instance"><i class="fa fa-server"></i> Instance</label>
+        <input type="text" id="node-input-instance">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sendType"><i class="fa fa-list"></i> Send</label>
+        <select id="node-input-sendType">
+            <option value="text">Text</option>
+            <option value="fileUrl">File by URL</option>
+            <option value="fileUpload">File upload</option>
+            <option value="location">Location</option>
+            <option value="contact">Contact</option>
+            <option value="poll">Poll</option>
+            <option value="uploadFile">Upload only (get URL)</option>
+        </select>
+    </div>
+    <div class="form-row" id="greenapi-send-row-chatId">
+        <label for="node-input-chatId"><i class="fa fa-user"></i> Chat</label>
+        <input type="text" id="node-input-chatId">
+        <input type="hidden" id="node-input-chatIdType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-message">
+        <label for="node-input-message"><i class="fa fa-comment"></i> Message</label>
+        <input type="text" id="node-input-message">
+        <input type="hidden" id="node-input-messageType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-urlFile">
+        <label for="node-input-urlFile"><i class="fa fa-link"></i> File URL</label>
+        <input type="text" id="node-input-urlFile">
+        <input type="hidden" id="node-input-urlFileType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-file">
+        <label for="node-input-file"><i class="fa fa-file"></i> File</label>
+        <input type="text" id="node-input-file">
+        <input type="hidden" id="node-input-fileType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-fileName">
+        <label for="node-input-fileName"><i class="fa fa-file-text-o"></i> File name</label>
+        <input type="text" id="node-input-fileName">
+        <input type="hidden" id="node-input-fileNameType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-caption">
+        <label for="node-input-caption"><i class="fa fa-comment-o"></i> Caption</label>
+        <input type="text" id="node-input-caption">
+        <input type="hidden" id="node-input-captionType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-latitude">
+        <label for="node-input-latitude"><i class="fa fa-map-marker"></i> Latitude</label>
+        <input type="text" id="node-input-latitude">
+        <input type="hidden" id="node-input-latitudeType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-longitude">
+        <label for="node-input-longitude"><i class="fa fa-map-marker"></i> Longitude</label>
+        <input type="text" id="node-input-longitude">
+        <input type="hidden" id="node-input-longitudeType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-nameLocation">
+        <label for="node-input-nameLocation"><i class="fa fa-tag"></i> Place name</label>
+        <input type="text" id="node-input-nameLocation">
+        <input type="hidden" id="node-input-nameLocationType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-address">
+        <label for="node-input-address"><i class="fa fa-road"></i> Address</label>
+        <input type="text" id="node-input-address">
+        <input type="hidden" id="node-input-addressType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-phoneContact">
+        <label for="node-input-phoneContact"><i class="fa fa-phone"></i> Phone</label>
+        <input type="text" id="node-input-phoneContact">
+        <input type="hidden" id="node-input-phoneContactType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-firstName">
+        <label for="node-input-firstName"><i class="fa fa-user"></i> First name</label>
+        <input type="text" id="node-input-firstName">
+        <input type="hidden" id="node-input-firstNameType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-lastName">
+        <label for="node-input-lastName"><i class="fa fa-user"></i> Last name</label>
+        <input type="text" id="node-input-lastName">
+        <input type="hidden" id="node-input-lastNameType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-company">
+        <label for="node-input-company"><i class="fa fa-building"></i> Company</label>
+        <input type="text" id="node-input-company">
+        <input type="hidden" id="node-input-companyType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-options">
+        <label for="node-input-options"><i class="fa fa-list-ul"></i> Options</label>
+        <input type="text" id="node-input-options">
+        <input type="hidden" id="node-input-optionsType">
+    </div>
+    <div class="form-row" id="greenapi-send-row-multipleAnswers">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-multipleAnswers" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-multipleAnswers" style="width:auto;">Allow multiple answers</label>
+    </div>
+    <div class="form-row" id="greenapi-send-row-quotedMessageId">
+        <label for="node-input-quotedMessageId"><i class="fa fa-reply"></i> Reply to</label>
+        <input type="text" id="node-input-quotedMessageId">
+        <input type="hidden" id="node-input-quotedMessageIdType">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="greenapi-send">
+    <p>Sends a message through a GREEN-API instance (WhatsApp, Telegram or MAX).</p>
+    <p>Every field can be a fixed value or read from <code>msg</code>, flow or global context.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>chatId <span class="property-type">string | number</span></dt>
+        <dd>Chat ID (<code>79001234567@c.us</code>, <code>...@g.us</code>, a Telegram or MAX chat ID) or a phone number. A phone number is turned into <code>&lt;digits&gt;@c.us</code>. For Telegram and MAX a plain number is treated as a chat ID. Default <code>msg.chatId</code>.</dd>
+        <dt>message <span class="property-type">string</span></dt>
+        <dd>Text for <b>Text</b>, question for <b>Poll</b>. Default <code>msg.payload</code>.</dd>
+        <dt>file <span class="property-type">Buffer</span></dt>
+        <dd><b>File upload</b>, <b>Upload only</b>: file content. Default <code>msg.payload</code>, as set by the <i>read file</i> node.</dd>
+        <dt>fileName <span class="property-type">string</span></dt>
+        <dd>File name with extension. A path is reduced to its base name. Default <code>msg.filename</code>.</dd>
+        <dt>options <span class="property-type">array | string</span></dt>
+        <dd><b>Poll</b>: array of strings, or one option per line.</dd>
+        <dt>quotedMessageId <span class="property-type">string</span></dt>
+        <dd>Optional. ID of the message to reply to.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>GREEN-API response, e.g. <code>{"idMessage": "..."}</code>. For <b>Upload only</b>: <code>{"urlFile": "..."}</code>.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p><b>Upload only</b> uploads the file to GREEN-API storage without sending it and outputs a temporary link. Send that link to any number of chats with <b>File by URL</b> instead of uploading the same file again for each chat.</p>
+    <p>Errors are reported to the <i>catch</i> node. Messenger limits apply, e.g. Telegram polls work only in groups.</p>
+</script>

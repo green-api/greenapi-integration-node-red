@@ -1,0 +1,55 @@
+{
+  "name": "@green-api/node-red-greenapi",
+  "version": "0.1.0",
+  "description": "Node-RED nodes for GREEN-API: send and receive WhatsApp, Telegram and MAX messages",
+  "license": "MIT",
+  "author": "GREEN-API team",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/green-api/greenapi-integration-node-red.git"
+  },
+  "bugs": {
+    "url": "https://github.com/green-api/greenapi-integration-node-red/issues"
+  },
+  "keywords": [
+    "node-red",
+    "green-api",
+    "whatsapp",
+    "telegram",
+    "max"
+  ],
+  "type": "commonjs",
+  "files": [
+    "dist",
+    "examples",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "prepublishOnly": "npm run build",
+    "test": "tsc -p tsconfig.json && node --test \"build/test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.9"
+  },
+  "node-red": {
+    "version": ">=4.0.0",
+    "nodes": {
+      "greenapi-instance": "dist/nodes/greenapi-instance.js",
+      "greenapi-send": "dist/nodes/greenapi-send.js",
+      "greenapi-receive": "dist/nodes/greenapi-receive.js",
+      "greenapi-api": "dist/nodes/greenapi-api.js"
+    }
+  },
+  "dependencies": {
+    "@green-api/greenapi-integration": "file:../greenapi-integration"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/node-red": "^1.3.5",
+    "express": "^4.22.3",
+    "node-red": "^5.0.7",
+    "node-red-node-test-helper": "^0.3.6",
+    "typescript": "^7.0.2"
+  }
+}
