@@ -1,6 +1,6 @@
 {
   "name": "@green-api/node-red-greenapi",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Node-RED nodes for GREEN-API: send and receive WhatsApp, Telegram and MAX messages",
   "license": "MIT",
   "author": "GREEN-API team",
