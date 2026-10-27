@@ -33,7 +33,7 @@ Requires Node-RED 4 or newer and Node.js 22.9 or newer.
 
 `send` accepts a chat ID or a phone number:
 
-- `79001234567@c.us`, `...@g.us`: used as is.
+- Anything with `@` (`79001234567@c.us`, `...@g.us`, `...@lid`): used as is.
 - A phone number in any format (`+7 900 123-45-67`): becomes `79001234567@c.us`.
 - A plain number on Telegram or MAX (`7203921144`, `-1001234567890`): used as a chat ID.
 

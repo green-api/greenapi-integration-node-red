@@ -14,8 +14,7 @@ export const STATUS_TEXT_MAX_LENGTH = 60;
 export const DEFAULT_TYPE_INSTANCE = "whatsapp";
 export const TYPE_INSTANCE_TO_MESSENGER: Record<string, Messenger> = {whatsapp: "whatsapp", telegram: "telegram", v3: "max", max: "max"};
 
-export const WHATSAPP_GROUP_ID = /^\d+(-\d+)?@g\.us$/;
-export const PHONE_CHAT_ID = /^\d+@c\.us$/;
+export const CHAT_ID_SEPARATOR = "@";
 export const NUMERIC_CHAT_ID = /^-?\d+$/;
 export const METHOD_NAME = /^[A-Za-z]+$/;
 export const MIN_PHONE_DIGITS = 7;
@@ -34,6 +33,7 @@ export const SEND_TYPED_PROPERTIES: Array<Exclude<keyof SendValues, "multipleAns
 	"nameLocation",
 	"address",
 	"phoneContact",
+	"contactChatId",
 	"firstName",
 	"lastName",
 	"company",

@@ -71,6 +71,7 @@ export interface SendValues {
 	nameLocation?: unknown;
 	address?: unknown;
 	phoneContact?: unknown;
+	contactChatId?: unknown;
 	firstName?: unknown;
 	lastName?: unknown;
 	company?: unknown;

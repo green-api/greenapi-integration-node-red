@@ -12,6 +12,11 @@ describe("toChatId", () => {
 		assert.equal(toChatId("120363043968066561@g.us", "whatsapp"), "120363043968066561@g.us");
 	});
 
+	it("keeps any id with @ as it is, including lid and channels", () => {
+		assert.equal(toChatId("115736668303446@lid", "whatsapp"), "115736668303446@lid");
+		assert.equal(toChatId(" 120363043968066561@newsletter ", "whatsapp"), "120363043968066561@newsletter");
+	});
+
 	it("treats plain numbers as chat ids on Telegram and MAX, as phones on WhatsApp", () => {
 		assert.equal(toChatId("7203921144", "telegram"), "7203921144");
 		assert.equal(toChatId("-1001234567890", "telegram"), "-1001234567890");

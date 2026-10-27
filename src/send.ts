@@ -3,7 +3,7 @@ import { toChatId } from "./chat-id";
 import type { Messenger, SendType, SendValues } from "./types";
 import { optionalText, requiredFile, requiredFileName, requiredNumber, requiredText } from "./values";
 
-export type SendClient = Pick<GreenApiClient, "sendMessage" | "sendFileByUrl" | "sendFileByUpload" | "sendLocation" | "sendContact" | "sendPoll" | "uploadFile">;
+export type SendClient = Pick<GreenApiClient, "sendMessage" | "sendFileByUrl" | "sendFileByUpload" | "sendLocation" | "sendContact" | "sendPoll" | "uploadFile" | "request">;
 
 function pollOptions(value: unknown): Array<{optionName: string}> {
 	const items = Array.isArray(value) ? value : typeof value === "string" ? value.split(/\r?\n/) : [];
@@ -60,6 +60,13 @@ export async function send(
 				address: optionalText(values.address),
 			});
 		case "contact":
+			if (messenger === "max") {
+				return client.request<SendResponse>("post", "sendContact", {
+					chatId,
+					quotedMessageId,
+					contact: {chatId: requiredText(values.contactChatId, "contactChatId").trim()},
+				});
+			}
 			return client.sendContact({
 				chatId,
 				quotedMessageId,
@@ -71,6 +78,14 @@ export async function send(
 				},
 			});
 		case "poll":
+			if (messenger === "max") {
+				return client.request<SendResponse>("post", "sendPoll", {
+					chatId,
+					quotedMessageId,
+					message: requiredText(values.message, "message"),
+					options: pollOptions(values.options),
+				});
+			}
 			return client.sendPoll({
 				chatId,
 				quotedMessageId,

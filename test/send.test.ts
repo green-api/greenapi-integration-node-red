@@ -22,6 +22,10 @@ function fakeClient(): {client: SendClient; calls: Array<{method: string; payloa
 			calls.push({method: "uploadFile", payload: args});
 			return {urlFile: "https://example.com/f"};
 		},
+		request: async (...args: unknown[]) => {
+			calls.push({method: "request", payload: args});
+			return {idMessage: "1"};
+		},
 	} as unknown as SendClient;
 	return {client, calls};
 }
@@ -72,6 +76,29 @@ describe("send", () => {
 		await send(client, "whatsapp", "contact", {chatId: "77006484493", phoneContact: "+7 700 648 44 93", firstName: "A"});
 		assert.equal((calls[0].payload as {latitude: number}).latitude, 51.1);
 		assert.equal((calls[1].payload as {contact: {phoneContact: number}}).contact.phoneContact, 77006484493);
+	});
+
+	it("sends a MAX contact by its chat id", async () => {
+		const {client, calls} = fakeClient();
+		await send(client, "max", "contact", {chatId: "16976233", contactChatId: " 17723549 ", phoneContact: "79001234567"});
+		assert.deepEqual(calls, [{method: "request", payload: ["post", "sendContact", {chatId: "16976233", quotedMessageId: undefined, contact: {chatId: "17723549"}}]}]);
+		await assert.rejects(send(client, "max", "contact", {chatId: "16976233"}), /contactChatId is required/);
+	});
+
+	it("sends a MAX poll without multipleAnswers", async () => {
+		const {client, calls} = fakeClient();
+		await send(client, "max", "poll", {chatId: "16976233", message: "Q", options: ["a", "b"], multipleAnswers: true});
+		assert.deepEqual(calls, [{method: "request", payload: ["post", "sendPoll", {chatId: "16976233", quotedMessageId: undefined, message: "Q", options: [{optionName: "a"}, {optionName: "b"}]}]}]);
+	});
+
+	it("keeps the WhatsApp contact and poll shapes", async () => {
+		const {client, calls} = fakeClient();
+		await send(client, "whatsapp", "contact", {chatId: "115736668303446@lid", phoneContact: "79001234567", firstName: "A"});
+		await send(client, "whatsapp", "poll", {chatId: "77006484493", message: "Q", options: "a\nb"});
+		assert.equal(calls[0].method, "sendContact");
+		assert.equal((calls[0].payload as {chatId: string}).chatId, "115736668303446@lid");
+		assert.equal(calls[1].method, "sendPoll");
+		assert.equal((calls[1].payload as {multipleAnswers: boolean}).multipleAnswers, false);
 	});
 
 	it("rejects missing fields before calling GREEN-API", async () => {

@@ -13,6 +13,7 @@
             nameLocation: {types: VALUE_TYPES, sendTypes: ["location"]},
             address: {types: VALUE_TYPES, sendTypes: ["location"]},
             phoneContact: {types: VALUE_TYPES, sendTypes: ["contact"]},
+            contactChatId: {types: VALUE_TYPES, sendTypes: ["contact"]},
             firstName: {types: VALUE_TYPES, sendTypes: ["contact"]},
             lastName: {types: VALUE_TYPES, sendTypes: ["contact"]},
             company: {types: VALUE_TYPES, sendTypes: ["contact"]},
@@ -38,6 +39,7 @@
                 nameLocation: {value: ""}, nameLocationType: {value: "str"},
                 address: {value: ""}, addressType: {value: "str"},
                 phoneContact: {value: ""}, phoneContactType: {value: "str"},
+                contactChatId: {value: ""}, contactChatIdType: {value: "str"},
                 firstName: {value: ""}, firstNameType: {value: "str"},
                 lastName: {value: ""}, lastNameType: {value: "str"},
                 company: {value: ""}, companyType: {value: "str"},
@@ -151,6 +153,11 @@
         <input type="text" id="node-input-phoneContact">
         <input type="hidden" id="node-input-phoneContactType">
     </div>
+    <div class="form-row" id="greenapi-send-row-contactChatId">
+        <label for="node-input-contactChatId"><i class="fa fa-address-book"></i> Contact chat</label>
+        <input type="text" id="node-input-contactChatId" placeholder="MAX only">
+        <input type="hidden" id="node-input-contactChatIdType">
+    </div>
     <div class="form-row" id="greenapi-send-row-firstName">
         <label for="node-input-firstName"><i class="fa fa-user"></i> First name</label>
         <input type="text" id="node-input-firstName">
@@ -174,7 +181,7 @@
     <div class="form-row" id="greenapi-send-row-multipleAnswers">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-multipleAnswers" style="display:inline-block; width:auto; vertical-align:top;">
-        <label for="node-input-multipleAnswers" style="width:auto;">Allow multiple answers</label>
+        <label for="node-input-multipleAnswers" style="width:auto;">Allow multiple answers (WhatsApp, Telegram)</label>
     </div>
     <div class="form-row" id="greenapi-send-row-quotedMessageId">
         <label for="node-input-quotedMessageId"><i class="fa fa-reply"></i> Reply to</label>
@@ -189,13 +196,15 @@
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>chatId <span class="property-type">string | number</span></dt>
-        <dd>Chat ID (<code>79001234567@c.us</code>, <code>...@g.us</code>, a Telegram or MAX chat ID) or a phone number. A phone number is turned into <code>&lt;digits&gt;@c.us</code>. For Telegram and MAX a plain number is treated as a chat ID. Default <code>msg.chatId</code>.</dd>
+        <dd>Chat ID (<code>79001234567@c.us</code>, <code>...@g.us</code>, <code>...@lid</code>, a Telegram or MAX chat ID) or a phone number. Anything with <code>@</code> is sent as is. A phone number is turned into <code>&lt;digits&gt;@c.us</code>. For Telegram and MAX a plain number is treated as a chat ID. Default <code>msg.chatId</code>.</dd>
         <dt>message <span class="property-type">string</span></dt>
         <dd>Text for <b>Text</b>, question for <b>Poll</b>. Default <code>msg.payload</code>.</dd>
         <dt>file <span class="property-type">Buffer</span></dt>
         <dd><b>File upload</b>, <b>Upload only</b>: file content. Default <code>msg.payload</code>, as set by the <i>read file</i> node.</dd>
         <dt>fileName <span class="property-type">string</span></dt>
         <dd>File name with extension. A path is reduced to its base name. Default <code>msg.filename</code>.</dd>
+        <dt>contactChatId <span class="property-type">string</span></dt>
+        <dd><b>Contact</b> on MAX: chat ID of the contact to send. It must be in the instance contacts. WhatsApp and Telegram use Phone and the names instead.</dd>
         <dt>options <span class="property-type">array | string</span></dt>
         <dd><b>Poll</b>: array of strings, or one option per line.</dd>
         <dt>quotedMessageId <span class="property-type">string</span></dt>
